@@ -13,29 +13,42 @@ MongoClient.connect('mongodb://127.0.0.1:27017/hello', function (err, db) {
 	var collection = db.collection('people');
 
 	ask('Hello! What is your name? ')
-	.then(function (name) {
-		var greeting = greeter.greet(name);
-
+	.then(function (name) {		
 		return Q.Promise(function (resolve, reject, notify) {
-			console.log('blah');
-			collection.insert({ name: name }, function (err, docs) {			
-				if (err) {
-					reject(err);
-				} 
+			collection.find({name: name}).toArray(function (err, results) {
+				var manDocument;
+				
+				if (results.length == 0) {
+					manDocument = { 
+						name: name,
+						count: 0
+					}
 
-				collection.count(function (err, count) {
-					console.log('count = ' + count);
-				});
+					collection.insert(manDocument, function (err, docs) {
+						if (err) {
+							reject(err);
+						}
+						resolve(docs[0]);
+					})
+				} else {
+					manDocument = results[0];
+					manDocument.count = manDocument.count + 1;
 
-				console.log(greeting);
+					collection.update({name: name}, manDocument, function (err, count) {
+						if (err) {
+							reject(err);
+						}
+						resolve(manDocument);
+					});
+				}				
+			});
 
-				collection.find().limit(10).toArray(function (err, results) {
-					console.dir(results);
-					resolve(results);
-				})
-			})
 		});
 
+	})
+	.then(function (man) {
+		var greeting = greeter.greet(man.name, man.count);
+		console.log(greeting);
 	})
 	.then(function () {
 		db.close();
