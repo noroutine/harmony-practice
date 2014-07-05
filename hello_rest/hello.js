@@ -1,5 +1,3 @@
-var MongoClient = require('mongodb').MongoClient;
-var ask = require('./question.js').ask;
 var Greeter = require('./greeter.js').Greeter;
 var people = require('./people.js');
 var Q = require('q');
@@ -19,35 +17,40 @@ server.on('connection', function (connection) {
 
 server.on('request', function (request, response) {
 
-//	connection.pipe(connection);
     if (request.method != 'GET') {
         response.statusCode = 405;
         response.end();
     }
 
-    Q.ninvoke(MongoClient, "connect", 'mongodb://127.0.0.1:27017/hello')
-        .then(function (db) {
-            var greeter = new Greeter();
+    var greeter = new Greeter();
 
-            var collection = db.collection('people');
+    var urlObj = url.parse(request.url);
 
-            var urlObj = url.parse(request.url);
+    var name = queryString.parse(urlObj.query).name;
 
-            var name = queryString.parse(urlObj.query).name;
+    var greetPromise;
 
-            return people.greet(name, collection)
-                .then(function (man) {
-                    var greeting = greeter.greet(man.name, man.count);
-
-                    response.statusCode = 200;
-                    response.setHeader('Content-Type', 'text/plain');
-                    response.write(greeting + os.EOL);
-                })
-                .then(function () {
-                    db.close();
-                    response.end();
-                });
+    if (name) {
+        greetPromise = people.greet(name)
+            .then(function (man) {
+                return greeter.greet(man.name, man.count);
+            });
+    } else {
+        greetPromise = Q.fcall(function () {
+            return 'Hello, World!';
         });
+    }
+
+    greetPromise
+        .then(function (greeting) {
+            response.statusCode = 200;
+            response.setHeader('Content-Type', 'text/plain');
+            response.write(greeting + os.EOL);
+        })
+        .then(function () {
+            response.end();
+        });
+
 });
 
 server.listen(65432, function () {

@@ -1,6 +1,25 @@
 var Q = require('q');
+var MongoClient = require('mongodb').MongoClient;
 
-exports.greet = function (name, collection) {
+var PEOPLE = 'people';
+
+var db;
+
+Q.ninvoke(MongoClient, "connect", 'mongodb://127.0.0.1:27017/hello')
+    .then(function (dbInstance) {
+        db = dbInstance;
+    });
+
+process.on('exit', function () {
+    db.close();
+    db = undefined;
+});
+
+// close db somehow ... db.close();
+
+exports.greet = function (name) {
+    var collection = db.collection('people');
+
 	return Q.ninvoke(collection.find({ name: name }), "toArray")
 	.then(function (results) {
 		var manDocument;
@@ -20,4 +39,4 @@ exports.greet = function (name, collection) {
 				return manDocument;
 			});
 	});
-}
+};
