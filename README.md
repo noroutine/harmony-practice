@@ -29,4 +29,9 @@ tcp server that greets you via telnet
 
 http server that greets you via web
 
+### hello_koa
+
+Hello based on Koa web framework and using node harmony
+
+Run with --harmony and make sure you have at least node 0.11
 
