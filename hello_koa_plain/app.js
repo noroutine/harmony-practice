@@ -21,7 +21,7 @@ app.use(function *() {
     var greeting;
 
     if (name) {
-        var man = yield people.greet(name);
+        var man = yield greet(name);
         greeting = greeter.greet(man.name, man.count);
     } else {
         greeting = 'Hello, World!';
