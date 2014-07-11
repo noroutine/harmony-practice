@@ -39,4 +39,8 @@ Run with --harmony and make sure you have at least node 0.11
 
 Simple HTML page served by koa, everything is manual, only one middleware is used to serve default koa favicon
 
+### jasmine_test
+
+Trying out jasmine and istanbul
+
 ### hello_koa_html
