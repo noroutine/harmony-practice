@@ -47,5 +47,7 @@ Trying out jasmine and istanbul
 
 Hello World with Koa using HTML
 
+### hello_koa_pretty
 
+Pretty version of previous simple but ugly hello world. Designed to last, hyhy
 
