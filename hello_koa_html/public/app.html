@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Greeter App</title>
+
+    <script type="application/javascript">
+        function greet(name, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(xhr.responseText);
+                }
+            }
+            xhr.open('get', '/api/hello?name=' + name, true);
+            xhr.send();
+        }
+
+        function sayHello() {
+            if (this.event.keyCode == 13) {
+                var name = document.getElementById('name').value
+                greet(name, function (greeting) {
+                    document.getElementById('placeForGreeting').textContent = greeting
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Greeter</h1>
+    <p>
+        Simple way to say hello!
+    </p>
+
+    <section>
+        <input id="name" onkeydown="sayHello()" autofocus />
+    </section>
+    <br />
+    <br />
+    <br />
+    <br />
+    <section>
+        <span id="placeForGreeting"></span>
+    </section>
+</body>
+</html>
