@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Greeter App</title>
 
+    <link rel="stylesheet" href="app.css" />
+
     <script type="application/javascript">
         function greet(name, callback) {
             var xhr = new XMLHttpRequest();
@@ -27,20 +29,30 @@
     </script>
 </head>
 <body>
-    <h1>Greeter</h1>
-    <p>
-        Simple way to say hello!
-    </p>
+    <div class="content">
+        <section>
+            <h1>Greeter</h1>
+            <p>
+                Simple way to say hello!
+            </p>
+        </section>
+        <section>
+            <p>
+                <input id="name" onkeydown="sayHello()" autofocus autocomplete="off"/>
+            </p>
+        </section>
+        <section>
+            <p>
+                <span id="placeForGreeting">&nbsp;</span>
+            </p>
+        </section>
 
-    <section>
-        <input id="name" onkeydown="sayHello()" autofocus />
-    </section>
-    <br />
-    <br />
-    <br />
-    <br />
-    <section>
-        <span id="placeForGreeting"></span>
-    </section>
+        <section>
+            <h1>Bueno</h1>
+            <p>Reprehenderit porro aliquip do qui diam condimentum volutpat amet nesciunt? Dapibus accumsan eiusmod, adipisicing excepteur cursus! Non bibendum ridiculus magni, auctor natus! Aute voluptatem, maecenas dui! Malesuada sapien auctor inceptos? Voluptas rhoncus facilis dapibus aliquip? Dignissimos! Odio adipisci volutpat debitis itaque torquent porta mollit rhoncus penatibus, repudiandae dis turpis deleniti habitasse, facilisis? Vivamus sagittis facilis. Et consectetur, primis eros, distinctio! Ultrices dignissimos? Aenean sed! Omnis expedita ac id tempor itaque feugiat posuere ea leo mollitia natus duis vulputate assumenda euismod ducimus fringilla arcu nostrum, aliquid possimus expedita congue sollicitudin quasi, ullam lobortis corrupti proident aperiam blandit nam vehicula, mollis inventore.</p>
+            <p>Aliquam ullam? Interdum scelerisque eaque repellat! Aperiam quasi faucibus, corporis error aut! Tempor condimentum alias assumenda urna? Molestie orci volutpat a et sed repellendus, lectus, ultricies, veritatis netus, enim provident, aenean pede ultrices! Veniam felis dictumst maecenas arcu, sed risus, eius architecto, laoreet dolor. Class ipsam excepteur dolorum, vehicula, asperiores expedita blandit dolorem eveniet, maecenas voluptatibus! Odio, taciti sagittis ornare eu pharetra vehicula, dignissim? Neque, rutrum. Torquent qui. Possimus nihil! Elit massa, fames pretium alias ante! Fermentum, molestias doloribus etiam dolores laoreet, dolorem aspernatur, praesentium luctus montes ullamcorper molestiae facilis. Enim morbi delectus! Turpis, fugit suspendisse rutrum nascetur placeat! Maiores.</p>
+            <p>Fuga assumenda justo amet id distinctio fermentum praesent sapiente, nesciunt, penatibus fames perspiciatis illum? Eu nisl! Provident asperiores eget mauris metus posuere hymenaeos adipisicing, elit maecenas maiores placerat fuga hymenaeos sapiente fuga aliquid primis error! Itaque? Occaecati curae, suspendisse placeat. Eros eius sunt rem, voluptatibus, aut. Corrupti leo! Lacus lacinia magna a tellus dignissim. Nemo? Nesciunt iste. Amet porro similique ac quos doloremque dignissimos tempora. Deserunt etiam quibusdam et sodales. Quasi inventore, risus ante quis in lectus, netus primis? Natoque tortor incididunt auctor adipisci, assumenda integer, egestas do illum voluptatem! Lectus sunt? Officia laboris cursus quisque iste architecto condimentum adipisci.</p>
+        </section>
+    </div>
 </body>
 </html>
