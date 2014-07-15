@@ -53,3 +53,8 @@ Hello World with Koa using HTML
 
 Pretty version of previous simple but ugly hello world. Designed to last, hyhy
 
+### json_edit
+
+Edit and object in the browser and synchronize it into the database, proof of concept of sync db
+
+

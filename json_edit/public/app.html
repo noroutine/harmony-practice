@@ -1,0 +1,63 @@
+<!doctype html>
+<html ng-app>
+<head>
+    <meta charset="UTF-8">
+    <title>json_edit</title>
+
+    <link rel="stylesheet" href="app.css" />
+
+    <script src="bower_components/angular/angular.min.js" type="application/javascript" ></script>
+    <script src="bower_components/pubnub/web/pubnub.min.js" type="application/javascript" ></script>
+    <script src="sync-sdk.js" type="application/javascript"></script>
+
+    <script type="application/javascript">
+
+        function FrontendItemController ($scope) {
+
+            // first instance of live object
+            $scope.item = SyncSDK.liveObject('http://2db7a602.ngrok.com/api/user', $scope)
+
+            $scope.sendToBackend = function () {
+                $scope.item.push()
+            }
+        }
+
+        function BackendItemController ($scope, $http) {
+            // this is another instance of live object
+            $scope.item = SyncSDK.liveObject('http://2db7a602.ngrok.com/api/user', $scope)
+        }
+    </script>
+</head>
+<body>
+    <div class="content center">
+        <section>
+            <h1>json_edit</h1>
+            <p>
+                Edit object and sync it to database
+            </p>
+        </section>
+        <section ng-controller="FrontendItemController">
+            <h1>Frontend Instance</h1>
+            <pre>
+{
+    "name":         <input type="text" ng-model="item.name"/>,
+    "description":  <input type="text" ng-model="item.description"/>,
+    "url":          <input type="url" ng-model="item.url"/>
+}
+            </pre>
+
+            <button type="button" class="center" ng-click="sendToBackend()">Sync</button>
+        </section>
+        <section ng-controller="BackendItemController">
+            <h1>Backend Instance</h1>
+            <pre>
+{
+    "name":         <input type="text" ng-model="item.name"/>,
+    "description":  <input type="text" ng-model="item.description"/>,
+    "url":          <input type="url" ng-model="item.url"/>
+}
+            </pre>
+        </section>
+    </div>
+</body>
+</html>
