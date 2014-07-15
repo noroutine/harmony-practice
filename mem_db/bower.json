@@ -1,0 +1,24 @@
+{
+  "name": "mem_db",
+  "version": "0.0.1",
+  "homepage": "https://github.com/noroutine/node-practice",
+  "authors": [
+    "noroutine"
+  ],
+  "description": "In-memory image database",
+  "main": "app.js",
+  "license": "GPL",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.20",
+    "pubnub": "~3.6.4",
+    "requirejs": "~2.1.14"
+  }
+}

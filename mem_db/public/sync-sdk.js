@@ -8,7 +8,7 @@ var pubnub = PUBNUB.init({
 var baseUrl = 'http://localhost:8080'
 
 window.SyncSDK = {
-    liveObject: function(syncURL, $scope) {
+    liveObject: function (syncURL, $scope) {
         // dirty way to have push and pull ;)
 
         function LiveObject () {
@@ -53,6 +53,36 @@ window.SyncSDK = {
         var instance = new LiveObject()
 
         // pull changes from backend
+        pubnub.subscribe({
+            channel : "changes",
+            message : function (changes) {
+                if (changes == syncURL) {
+                    instance.pull()
+                }
+            }
+        })
+
+        instance.pull()
+
+        return instance
+    },
+
+    liveArray: function (syncURL, $scope) {
+        var instance = new LiveArray()
+
+        function LiveArray() {
+
+        }
+
+        LiveArray.prototype = {
+            push: function () {
+
+            },
+            pull: function () {
+
+            }
+        }
+
         pubnub.subscribe({
             channel : "changes",
             message : function (changes) {

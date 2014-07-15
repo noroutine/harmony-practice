@@ -2,7 +2,7 @@
 <html ng-app>
 <head>
     <meta charset="UTF-8">
-    <title>json_edit</title>
+    <title>image_db</title>
 
     <link rel="stylesheet" href="app.css" />
 
@@ -15,7 +15,7 @@
         function FrontendItemController ($scope) {
 
             // first instance of live object
-            $scope.item = SyncSDK.liveObject('/api/user', $scope)
+            $scope.item = SyncSDK.liveObject('/api/image', $scope)
 
             $scope.sendToBackend = function () {
                 $scope.item.push()
@@ -24,14 +24,14 @@
 
         function BackendItemController ($scope, $http) {
             // this is another instance of live object
-            $scope.item = SyncSDK.liveObject('/api/user', $scope)
+            $scope.item = SyncSDK.liveObject('/api/image', $scope)
         }
     </script>
 </head>
 <body>
     <div class="content center">
         <section>
-            <h1>json_edit</h1>
+            <h1>image_db</h1>
             <p>
                 Edit object and sync it to database
             </p>
