@@ -53,17 +53,20 @@ app.use(function *(next) {
 // sync api
 app.use(function *(next) {
     if (this.method == 'POST' && /^\/api\/image/.test(this.path)) {
-        DbClient.insert(DB.image, yield parse(this))
+        var object = yield parse(this)
+        console.log('Received ' , object)
+        DbClient.update(DB.image, function (item) { return item.id == 1; }, object)
         this.status = 200
     }
 
     if (this.method == 'GET' && /^\/api\/image/.test(this.path)) {
-        this.body = DbClient.select(DB.image, function () { return true });
+        this.body = DbClient.select(DB.image, function (item) { return item.id == 1; })[0];
+        console.log('Sending ', this.body)
     }
 })
 
 var server = http.createServer(app.callback())
 
-server.listen(8080)
+server.listen(3000)
 
 

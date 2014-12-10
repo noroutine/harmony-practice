@@ -8,15 +8,13 @@ var pubnub = PUBNUB.init({
 
 // our database ;)
 var DB = module.exports.DB = {
-    user: [
+    image: [
         {
+            id: 1,
             name: 'Alex',
             description: "That's me",
             url: 'http://noroutine.me'
         }
-    ],
-    image: [
-
     ]
 }
 
@@ -30,42 +28,44 @@ module.exports.DbClient = {
         _.each(collection, function (item) {
             if (item == undefined) return
 
-            if (predicate(item)) {
-                // dirty
-                _.each(iten, function(value, key) {
-                    delete item[key]
-                })
-                _.extend(item, newItem)
+            if (predicate.apply(item, arguments)) {
+                updateObject(item, newItem)
             }
         })
     },
     select: function (collection, predicate) {
         return _.filter(collection, function (item) {
-            return item != undefined && predicate(item)
+            return item != undefined && predicate.apply(item, arguments)
         })
     },
     'delete': function (collection, predicate) {
         _.each(collection, function (item, index) {
             if (item == undefined) return
 
-            if (predicate(item)) {
+            if (predicate.apply(item, arguments)) {
                 delete collection[index]
             }
         })
     }
 }
 
-
-Object.observe(DB.user, function (changes) {
-    pubnub.publish({
-        channel: 'changes',
-        message: '/api/user'
+function updateObject(item, newItem) {
+    // dirty
+    _.each(item, function(value, key) {
+        delete item[key]
     })
-})
+    _.extend(item, newItem)
+}
 
-Object.observe(DB.image, function (changes) {
-    pubnub.publish({
-        channel: 'changes',
-        message: '/api/image'
+function _observe(obj, channel) {
+    Object.observe(obj, function (changes) {
+        console.log(changes)
+        pubnub.publish({
+            channel: 'changes',
+            message: channel
+        })
     })
-})
+}
+
+
+_observe(DB.image, '/api/image')

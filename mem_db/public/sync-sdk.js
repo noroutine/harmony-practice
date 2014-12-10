@@ -5,7 +5,7 @@ var pubnub = PUBNUB.init({
     subscribe_key : 'sub-c-0a916f70-0c1f-11e4-9922-02ee2ddab7fe'
 })
 
-var baseUrl = 'http://localhost:8080'
+var baseUrl = 'http://localhost:3000'
 
 window.SyncSDK = {
     liveObject: function (syncURL, $scope) {
@@ -56,6 +56,7 @@ window.SyncSDK = {
         pubnub.subscribe({
             channel : "changes",
             message : function (changes) {
+                console.log('got incoming notification for ' + syncUrl, changes)
                 if (changes == syncURL) {
                     instance.pull()
                 }
@@ -82,6 +83,8 @@ window.SyncSDK = {
 
             }
         }
+
+        LiveArray.prototype = LiveObject.prototype // for the start we just submit everything
 
         pubnub.subscribe({
             channel : "changes",
