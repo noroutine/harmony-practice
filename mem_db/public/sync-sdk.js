@@ -8,7 +8,7 @@ var pubnub = PUBNUB.init({
 var baseUrl = 'http://localhost:3000'
 
 window.SyncSDK = {
-    liveObject: function (syncURL, $scope) {
+    liveObject: function (syncUrl, channel, $scope) {
         // dirty way to have push and pull ;)
 
         function LiveObject () {
@@ -20,9 +20,9 @@ window.SyncSDK = {
                 var self = this;
                 var $injector = angular.injector(['ng']);
                 $injector.invoke(function ($http) {
-                    $http.post(baseUrl + syncURL, self)
+                    $http.post(baseUrl + syncUrl, self)
                         .success(function () {
-                            console.log('push ' + syncURL, instance)
+                            console.log('push ' + syncUrl, instance)
                         })
                 })
             },
@@ -31,7 +31,7 @@ window.SyncSDK = {
                 var self = this;
                 var $injector = angular.injector(['ng']);
                 $injector.invoke(function ($http) {
-                    $http.get(baseUrl + syncURL)
+                    $http.get(baseUrl + syncUrl)
                         .success(function (newInstance) {
                             // dirty part: update members, but keep reference
                             for (var member in self) {
@@ -42,7 +42,7 @@ window.SyncSDK = {
 
                             angular.extend(self, newInstance)
 
-                            console.log('pull ' + syncURL, instance)
+                            console.log('pull ' + syncUrl, instance)
 
                             $scope.$digest()
                         })
@@ -54,12 +54,10 @@ window.SyncSDK = {
 
         // pull changes from backend
         pubnub.subscribe({
-            channel : "changes",
+            channel : channel,
             message : function (changes) {
-                console.log('got incoming notification for ' + syncUrl, changes)
-                if (changes == syncURL) {
-                    instance.pull()
-                }
+                console.log('got incoming notification' , changes)
+                instance.pull()
             }
         })
 
@@ -68,7 +66,7 @@ window.SyncSDK = {
         return instance
     },
 
-    liveArray: function (syncURL, $scope) {
+    liveArray: function (channel, $scope) {
         var instance = new LiveArray()
 
         function LiveArray() {
@@ -87,11 +85,9 @@ window.SyncSDK = {
         LiveArray.prototype = LiveObject.prototype // for the start we just submit everything
 
         pubnub.subscribe({
-            channel : "changes",
+            channel : channel,
             message : function (changes) {
-                if (changes == syncURL) {
-                    instance.pull()
-                }
+                instance.pull()
             }
         })
 
@@ -99,4 +95,29 @@ window.SyncSDK = {
 
         return instance
     }
+}
+
+function _patch(c) {
+    var name = c.name
+
+    ({
+        'add': function() {
+            if (this.hasOwnProperty(name)) {
+                console.err('Object inconsistency for change', c)
+            }
+            this[name] = c.object[name]
+        },
+        'delete': function() {
+            if (! this.hasOwnProperty(name)) {
+                console.err('Object inconsistency for change', c)
+            }
+            delete this[name]
+        },
+        'update': function() {
+            if (! this.hasOwnProperty(name) || this[name] != c.oldValue) {
+                console.err('Object inconsistency for change', c)
+            }
+            this[name] = c.object[name]
+        }
+    })[c.type].apply(this, arguments);
 }

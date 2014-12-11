@@ -9,12 +9,6 @@ var pubnub = PUBNUB.init({
 // our database ;)
 var DB = module.exports.DB = {
     image: [
-        {
-            id: 1,
-            name: 'Alex',
-            description: "That's me",
-            url: 'http://noroutine.me'
-        }
     ]
 }
 
@@ -22,6 +16,7 @@ var DB = module.exports.DB = {
 
 module.exports.DbClient = {
     insert: function (collection, item) {
+        _observe(item, 'changes')
         collection.push(item)
     },
     update: function (collection, predicate, newItem) {
@@ -59,13 +54,42 @@ function updateObject(item, newItem) {
 
 function _observe(obj, channel) {
     Object.observe(obj, function (changes) {
-        console.log(changes)
+        console.log('Changes', changes)
         pubnub.publish({
-            channel: 'changes',
-            message: channel
+            channel: channel,
+            message: changes
         })
     })
 }
 
+Object.prototype.patch = function() {
+    _patch.apply(this, arguments)
+}
 
-_observe(DB.image, '/api/image')
+function _patch(c) {
+    var name = c.name
+
+    ({
+        'add': function() {
+            if (this.hasOwnProperty(name)) {
+                console.err('Object inconsistency for change', c)
+            }
+            this[name] = c.object[name]
+        },
+        'delete': function() {
+            if (! this.hasOwnProperty(name)) {
+                console.err('Object inconsistency for change', c)
+            }
+            delete this[name]
+        },
+        'update': function() {
+            if (! this.hasOwnProperty(name) || this[name] != c.oldValue) {
+                console.err('Object inconsistency for change', c)
+            }
+            this[name] = c.object[name]
+        }
+    })[c.type].apply(this, arguments);
+}
+
+
+_observe(DB.image, 'changes')
