@@ -2,38 +2,50 @@
 <html ng-app>
 <head>
     <meta charset="UTF-8">
-    <title>image_db</title>
+    <title>live_objects</title>
 
     <link rel="stylesheet" href="app.css" />
 
     <script src="bower_components/angular/angular.min.js" type="application/javascript" ></script>
-    <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
     <script src="sync-sdk.js" type="application/javascript"></script>
 
     <script type="application/javascript">
 
         function FrontendItemController ($scope) {
-
             // first instance of live object
-            $scope.item = SyncSDK.liveObject('/api/item', 'changes:/item', $scope)
+            $scope.item = SyncSDK.liveObject('/api/item', $scope)
+
+            $scope.sendToBackend = function () {
+                $scope.item.push()
+            }лщ
+        }
+
+        function BackendItemController ($scope, $http) {
+            // this is another instance of live object
+            $scope.item = SyncSDK.liveObject('/api/item', $scope)
+        }
+
+        function FrontendItem1Controller ($scope) {
+            // first instance of live object
+            $scope.item = SyncSDK.liveObject('/api/meti', $scope)
 
             $scope.sendToBackend = function () {
                 $scope.item.push()
             }
         }
 
-        function BackendItemController ($scope, $http) {
+        function BackendItem1Controller ($scope, $http) {
             // this is another instance of live object
-            $scope.item = SyncSDK.liveObject('/api/item', 'changes:/item', $scope)
+            $scope.item = SyncSDK.liveObject('/api/meti', $scope)
         }
     </script>
 </head>
 <body>
     <div class="content center">
         <section>
-            <h1>image_db</h1>
+            <h1>live_objects</h1>
             <p>
-                Edit object and sync it to database
+                Edit object and sync it across all clients
             </p>
         </section>
         <section ng-controller="FrontendItemController">
@@ -48,7 +60,29 @@
 
             <button type="button" class="center" ng-click="sendToBackend()">Sync</button>
         </section>
+        <section ng-controller="FrontendItem1Controller">
+            <h1>Frontend Instance</h1>
+            <pre>
+{
+    "name":         <input type="text" ng-model="item.name"/>,
+    "description":  <input type="text" ng-model="item.description"/>,
+    "url":          <input type="url" ng-model="item.url"/>
+}
+            </pre>
+
+            <button type="button" class="center" ng-click="sendToBackend()">Sync</button>
+        </section>
         <section ng-controller="BackendItemController">
+            <h1>Backend Instance</h1>
+            <pre>
+{
+    "name":         <input type="text" ng-model="item.name"/>,
+    "description":  <input type="text" ng-model="item.description"/>,
+    "url":          <input type="url" ng-model="item.url"/>
+}
+            </pre>
+        </section>
+        <section ng-controller="BackendItem1Controller">
             <h1>Backend Instance</h1>
             <pre>
 {

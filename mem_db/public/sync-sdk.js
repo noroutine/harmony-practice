@@ -1,17 +1,67 @@
 // very dirty SDK not awesome at all
+var baseHost = 'localhost:3000';
+var baseUrl = 'http://' + baseHost;
+var syncChannel = 'me.noroutine.sync.changes';
 
-var pubnub = PUBNUB.init({
-    publish_key   : 'pub-c-ed7f4d10-a7aa-41ec-b5e9-a092e97902a9',
-    subscribe_key : 'sub-c-0a916f70-0c1f-11e4-9922-02ee2ddab7fe'
-})
+var syncMap = {};
 
-var baseUrl = 'http://localhost:3000'
+var _syncForChannel = function (syncId) {
+    var channelInstances = syncMap[syncId];
+    if (channelInstances != undefined) {
+        for (var i = 0, l = channelInstances.length; i < l; i++) {
+            channelInstances[i].pull();
+        }
+    }
+};
+
+var _patchForChannel = function (syncId, changes) {
+    var channelInstances = syncMap[syncId];
+    if (channelInstances != undefined) {
+        for (var i = 0, l = channelInstances.length; i < l; i++) {
+            for (var j = 0, ll = changes.length; j < ll; j++) {
+                _patch.call(channelInstances[i], changes[j])
+            }
+            channelInstances[i].change()
+        }
+    }
+};
+
+var _addLiveSync = function (syncId, instance) {
+    var channelInstances = syncMap[syncId]
+    if (channelInstances == undefined) {
+        syncMap[syncId] = channelInstances = [ instance ]
+    } else {
+        channelInstances.push(instance)
+    }
+    instance.pull()
+};
+
+
+var ws = new WebSocket('ws://' + baseHost + '/' + syncChannel, ['echo']);
+ws.onopen = function () {
+    console.log('WebSocket connected...')
+};
+
+ws.onerror = function (e) {
+    console.log('WebSocket Error: ' + e)
+};
+
+ws.onmessage = function (e) {
+    // request to sync some object
+    var json = JSON.parse(e.data);
+    var channel = json.channel;
+    var message = json.message;
+    console.log('Change notification for channel ' + channel, message);
+
+    var instanceChange = JSON.parse(message);
+
+    _patchForChannel(instanceChange.instance, instanceChange.changes)
+};
 
 window.SyncSDK = {
-    liveObject: function (syncUrl, channel, $scope) {
+    liveObject: function (syncUrl, $scope) {
         // dirty way to have push and pull ;)
-
-        function LiveObject () {
+        function LiveObject() {
 
         }
 
@@ -47,77 +97,43 @@ window.SyncSDK = {
                             $scope.$digest()
                         })
                 })
-            }
-        }
-
-        var instance = new LiveObject()
-
-        // pull changes from backend
-        pubnub.subscribe({
-            channel : channel,
-            message : function (changes) {
-                console.log('got incoming notification' , changes)
-                instance.pull()
-            }
-        })
-
-        instance.pull()
-
-        return instance
-    },
-
-    liveArray: function (channel, $scope) {
-        var instance = new LiveArray()
-
-        function LiveArray() {
-
-        }
-
-        LiveArray.prototype = {
-            push: function () {
-
             },
-            pull: function () {
-
+            change: function () {
+                $scope.$digest()
             }
-        }
 
-        LiveArray.prototype = LiveObject.prototype // for the start we just submit everything
 
-        pubnub.subscribe({
-            channel : channel,
-            message : function (changes) {
-                instance.pull()
-            }
-        })
+        };
 
-        instance.pull()
+        var instance = new LiveObject();
 
-        return instance
+        _addLiveSync(syncUrl, instance);
+
+        return instance;
     }
-}
+};
 
 function _patch(c) {
-    var name = c.name
+    var name = c.name;
 
     ({
         'add': function() {
             if (this.hasOwnProperty(name)) {
-                console.err('Object inconsistency for change', c)
+                console.log('Object inconsistency for change', c);
             }
-            this[name] = c.object[name]
+            this[name] = c.object[name];
         },
         'delete': function() {
             if (! this.hasOwnProperty(name)) {
-                console.err('Object inconsistency for change', c)
+                console.log('Object inconsistency for change', c);
             }
-            delete this[name]
+            delete this[name];
         },
         'update': function() {
             if (! this.hasOwnProperty(name) || this[name] != c.oldValue) {
-                console.err('Object inconsistency for change', c)
+                console.log('Object inconsistency for change', c);
             }
-            this[name] = c.object[name]
+            this[name] = c.object[name];
         }
     })[c.type].apply(this, arguments);
 }

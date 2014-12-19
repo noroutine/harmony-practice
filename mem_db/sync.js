@@ -12,23 +12,21 @@ function _observe(obj, channel) {
 
 Object.prototype.patch = function(c) {
     return _patch.call(this, c)
-}
+};
 
 Object.prototype.diff = function(other) {
     return _diff.call(this, other)
-}
+};
 
 function _diff(b) {
     var a = _.extend({}, this);
 
-    console.log(a, b)
-
-    var changes = []
+    var changes = [];
     for (var key in this) {
         if (a.hasOwnProperty(key)) {
             if (b.hasOwnProperty(key)) {
                 if (a[key] != b[key]) {
-                    a[key] = b[key]
+                    a[key] = b[key];
                     changes.push({
                         type: 'update',
                         object: _.extend({}, a),
@@ -37,7 +35,7 @@ function _diff(b) {
                     })
                 } // else ignore
             } else {
-                delete a[key]
+                delete a[key];
                 changes.push({
                     type: 'delete',
                     object: _.extend({}, a),
@@ -46,7 +44,7 @@ function _diff(b) {
             }
         } else {
             if (b.hasOwnProperty(key)) {
-                a[key] = b[key]
+                a[key] = b[key];
                 changes.push({
                     type: 'add',
                     object: _.extend({}, a),
@@ -57,7 +55,7 @@ function _diff(b) {
             }
         }
     }
-    return changes
+    return changes;
 }
 
 function _patch(c) {

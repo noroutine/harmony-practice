@@ -1,10 +1,4 @@
 var _ = require('lodash')
-var PUBNUB = require('pubnub')
-
-var pubnub = PUBNUB.init({
-    publish_key   : 'pub-c-ed7f4d10-a7aa-41ec-b5e9-a092e97902a9',
-    subscribe_key : 'sub-c-0a916f70-0c1f-11e4-9922-02ee2ddab7fe'
-})
 
 // our database ;)
 var DB = module.exports.DB = {
